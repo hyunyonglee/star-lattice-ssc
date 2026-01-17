@@ -1,0 +1,38 @@
+# Data folder
+data/
+data1/
+datas/
+logs/
+mps/
+observables/
+analysis/
+summary/
+
+# Dependency directories
+__pycache__/
+
+# text files
+*.txt
+
+# pkl files
+*.pkl
+
+# log files
+log
+*log
+
+# h5 files
+*.h5
+
+# test files
+test_*
+
+# Garbage
+.DS_Store
+.vscode
+*workspace*
+
+#.sh
+*.sh
+
+dist*
