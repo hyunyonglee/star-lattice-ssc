@@ -273,6 +273,7 @@ if __name__ == "__main__":
     parser.add_argument("--Lx", default='1', help="Length of cylinder")
     parser.add_argument("--Ly", default='2', help="Circumference of cylinder")
     parser.add_argument("--J_chi", default='100.0', help=" Chirality coupling")
+    parser.add_argument("--J_chi0", default='0.0', help=" On-site chirality field")
     parser.add_argument("--chi", default='100', help="Bond dimension")
     parser.add_argument("--max_sweep", default='50', help="Maximum number of sweeps")
     parser.add_argument("--path", default=current_directory, help="path for saving data")
@@ -283,6 +284,7 @@ if __name__ == "__main__":
     Lx = int(args.Lx)
     Ly = int(args.Ly)
     J_chi = float(args.J_chi)
+    J_chi0 = float(args.J_chi0)
     chi = int(args.chi)
     max_sweep = int(args.max_sweep)
     path = args.path
@@ -298,7 +300,8 @@ if __name__ == "__main__":
         't_intra': 1.0,
         't_inter': 1.0,
         't3': 0.25, 
-        'J_chi': J_chi
+        'J_chi': J_chi,
+        'J_chi0': J_chi0
     }
 
     dmrg_params = {

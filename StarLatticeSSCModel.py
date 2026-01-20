@@ -99,6 +99,7 @@ class StarLatticeSSCModel(CouplingMPOModel):
         t_inter = model_params.get('t_inter', 1.0)
         t3 = model_params.get('t3', 0.0)  # [NEW] t3 hopping parameter
         J_chi = model_params.get('J_chi', 0.0) 
+        J_chi0 = model_params.get('J_chi0', 0.0)
         
         # Intra Hopping
         for u1, u2, dx in self.lat.pairs['intra']:
@@ -121,6 +122,54 @@ class StarLatticeSSCModel(CouplingMPOModel):
             target_offsets = [[0, 0], [0, -1], [1, 0]]
             for offset in target_offsets:
                 self.add_chirality_interaction_sz_conserving(-J_chi, offset)
+
+        # On-site Chirality Field
+        if J_chi0 != 0:
+            self.add_chirality_field(-J_chi0)
+
+
+    def add_chirality_field(self, strength):
+        """
+        Adds H += strength * sum_{triangles} Chi_triangle
+        Triangle A indices: (0, 1, 2)
+        Triangle B indices: (3, 5, 4) (Note the order for correct chirality definition)
+        """
+        # 측정 함수(measure_chirality)와 동일한 prefactor 사용
+        prefactor = 2.0 / (np.sqrt(3.0) * 1j)
+
+        # 3-site 항을 생성하는 내부 함수
+        def get_single_chirality_terms(indices):
+            cyclic_perms = [
+                (indices[0], indices[1], indices[2]),
+                (indices[1], indices[2], indices[0]),
+                (indices[2], indices[0], indices[1])
+            ]
+            terms = []
+            for (idx1, idx2, idx3) in cyclic_perms:
+                # Term 1: + prefactor * Sp_1 Sm_2 Sz_3
+                terms.append( (prefactor, ['Sp', 'Sm', 'Sz'], [idx1, idx2, idx3]) )
+                # Term 2: - prefactor * Sm_1 Sp_2 Sz_3
+                terms.append( (-prefactor, ['Sm', 'Sp', 'Sz'], [idx1, idx2, idx3]) )
+            return terms
+
+        # 1. Triangle A (0, 1, 2)
+        for coeff, ops, idxs in get_single_chirality_terms([0, 1, 2]):
+            total_coeff = strength * coeff
+            multi_coupling_args = []
+            for op, site_idx in zip(ops, idxs):
+                # 같은 Unit cell 내의 상호작용이므로 dx는 [0, 0]
+                multi_coupling_args.append((op, [0, 0], site_idx))
+            self.add_multi_coupling(total_coeff, multi_coupling_args)
+
+        # 2. Triangle B (3, 5, 4) 
+        # 주의: measure_chirality 함수와 일관성을 유지하기 위해 인덱스 순서(3, 5, 4) 사용
+        for coeff, ops, idxs in get_single_chirality_terms([3, 5, 4]):
+            total_coeff = strength * coeff
+            multi_coupling_args = []
+            for op, site_idx in zip(ops, idxs):
+                multi_coupling_args.append((op, [0, 0], site_idx))
+            self.add_multi_coupling(total_coeff, multi_coupling_args)
+
 
     def add_chirality_interaction_sz_conserving(self, strength, offset_B):
         """
