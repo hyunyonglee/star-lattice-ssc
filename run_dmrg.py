@@ -272,6 +272,9 @@ if __name__ == "__main__":
     parser=argparse.ArgumentParser()
     parser.add_argument("--Lx", default='1', help="Length of cylinder")
     parser.add_argument("--Ly", default='2', help="Circumference of cylinder")
+    parser.add_argument("--t_intra", default='1.0', help=" Intra triangle hopping")
+    parser.add_argument("--t_inter", default='1.0', help=" Inter triangle hopping")
+    parser.add_argument("--t3", default='0.25', help=" 3rd nearest neighbor hopping")
     parser.add_argument("--J_chi", default='100.0', help=" Chirality coupling")
     parser.add_argument("--J_chi0", default='0.0', help=" On-site chirality field")
     parser.add_argument("--J_inter", default='0.0', help=" Inter triangle Heisenberg coupling")
@@ -284,6 +287,9 @@ if __name__ == "__main__":
     # parameters
     Lx = int(args.Lx)
     Ly = int(args.Ly)
+    t_intra = float(args.t_intra)
+    t_inter = float(args.t_inter)
+    t3 = float(args.t3)
     J_chi = float(args.J_chi)
     J_chi0 = float(args.J_chi0)
     J_inter = float(args.J_inter)
@@ -299,9 +305,9 @@ if __name__ == "__main__":
         'conserve': 'N,Sz',     
         
         # model specific parameters
-        't_intra': 1.0,
-        't_inter': 1.0,
-        't3': 0.25, 
+        't_intra': t_intra,
+        't_inter': t_inter,
+        't3': t3, 
         'J_chi': J_chi,
         'J_chi0': J_chi0,
         'J_inter': J_inter
