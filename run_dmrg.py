@@ -207,10 +207,19 @@ def measure_chirality_correlation(psi, model):
     return chi_corr_list
 
 
-def write_data( psi, E, EE, Nup, Ndw, chis, chi_corrs, Lx, Ly, t_intra, t_inter, t3, J_chi, J_chi0, J_inter, path, wavefunc=False ):
+def write_data( psi, E, EE, Nup, Ndw, chis, chi_corrs, model_params, path, wavefunc=False ):
 
     ensure_dir(path+"/observables/")
     ensure_dir(path+"/mps/")
+
+    Lx = model_params['Lx']
+    Ly = model_params['Ly']
+    t_intra = model_params['t_intra']
+    t_inter = model_params['t_inter']
+    t3 = model_params['t3']
+    J_chi = model_params['J_chi']
+    J_chi0 = model_params['J_chi0']
+    J_inter = model_params['J_inter']
 
     if wavefunc:
         data = {"psi": psi}
@@ -345,4 +354,4 @@ if __name__ == "__main__":
     Nup = psi.expectation_value("Nu")
     Ndw = psi.expectation_value("Nd")
 
-    write_data( psi, E, EE, Nup, Ndw, chis, chi_corrs, Lx, Ly, J_chi, path, wavefunc=args.wavefunc )
+    write_data( psi, E, EE, Nup, Ndw, chis, chi_corrs, model_params, path, wavefunc=args.wavefunc )
