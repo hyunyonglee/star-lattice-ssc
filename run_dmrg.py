@@ -274,6 +274,7 @@ if __name__ == "__main__":
     parser.add_argument("--Ly", default='2', help="Circumference of cylinder")
     parser.add_argument("--J_chi", default='100.0', help=" Chirality coupling")
     parser.add_argument("--J_chi0", default='0.0', help=" On-site chirality field")
+    parser.add_argument("--J_inter", default='0.0', help=" Inter triangle Heisenberg coupling")
     parser.add_argument("--chi", default='100', help="Bond dimension")
     parser.add_argument("--max_sweep", default='50', help="Maximum number of sweeps")
     parser.add_argument("--path", default=current_directory, help="path for saving data")
@@ -285,6 +286,7 @@ if __name__ == "__main__":
     Ly = int(args.Ly)
     J_chi = float(args.J_chi)
     J_chi0 = float(args.J_chi0)
+    J_inter = float(args.J_inter)
     chi = int(args.chi)
     max_sweep = int(args.max_sweep)
     path = args.path
@@ -296,16 +298,17 @@ if __name__ == "__main__":
         'bc_MPS': 'infinite', # 'finite',  # 
         'conserve': 'N,Sz',     
         
-        # 물리적 파라미터
+        # model specific parameters
         't_intra': 1.0,
         't_inter': 1.0,
         't3': 0.25, 
         'J_chi': J_chi,
-        'J_chi0': J_chi0
+        'J_chi0': J_chi0,
+        'J_inter': J_inter
     }
 
     dmrg_params = {
-        'mixer': True,                # t가 작으므로 필수
+        'mixer': True,                
         'mixer_params': {
             'amplitude': 1.e-3,       
             'decay': 2.0,             
@@ -321,13 +324,14 @@ if __name__ == "__main__":
         'combine': True                 
     }
 
-    # 1. DMRG 실행 (이전 단계)
+    # 1. DMRG run
     psi, E, model = run_dmrg_chirality_model(model_params, dmrg_params)
 
-    # 2. 카이랄리티 측정 (psi, model이 메모리에 있다고 가정)
+    # 2. Chirality Measurements
     chis = measure_chirality(psi, model)
     print(chis)
 
+    # 3. Chirality-Correlation Measurements
     chi_corrs = measure_chirality_correlation(psi, model)
     print(chi_corrs)
 

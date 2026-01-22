@@ -100,6 +100,7 @@ class StarLatticeSSCModel(CouplingMPOModel):
         t3 = model_params.get('t3', 0.0)  # [NEW] t3 hopping parameter
         J_chi = model_params.get('J_chi', 0.0) 
         J_chi0 = model_params.get('J_chi0', 0.0)
+        J_inter = model_params.get('J_inter', 0.0)
         
         # Intra Hopping
         for u1, u2, dx in self.lat.pairs['intra']:
@@ -111,7 +112,7 @@ class StarLatticeSSCModel(CouplingMPOModel):
             self.add_coupling(-t_inter, u1, 'Cdu', u2, 'Cu', dx, plus_hc=True)
             self.add_coupling(-t_inter, u1, 'Cdd', u2, 'Cd', dx, plus_hc=True)
             
-        # [NEW] 3rd Nearest Neighbor Hopping
+        # 3rd Nearest Neighbor Hopping
         if t3 != 0:
             for u1, u2, dx in self.lat.pairs['t3']:
                 self.add_coupling(-t3, u1, 'Cdu', u2, 'Cu', dx, plus_hc=True)
@@ -126,6 +127,14 @@ class StarLatticeSSCModel(CouplingMPOModel):
         # On-site Chirality Field
         if J_chi0 != 0:
             self.add_chirality_field(-J_chi0)
+
+        # H = J_inter * (Sz_i Sz_j + 0.5 * (Sp_i Sm_j + Sm_i Sp_j))
+        if J_inter != 0:
+            for u1, u2, dx in self.lat.pairs['inter']:
+                # Sz * Sz
+                self.add_coupling(J_inter, u1, 'Sz', u2, 'Sz', dx)
+                # 0.5 * (Sp * Sm + h.c.)
+                self.add_coupling(J_inter * 0.5, u1, 'Sp', u2, 'Sm', dx, plus_hc=True)
 
 
     def add_chirality_field(self, strength):
