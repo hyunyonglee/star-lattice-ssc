@@ -207,14 +207,14 @@ def measure_chirality_correlation(psi, model):
     return chi_corr_list
 
 
-def write_data( psi, E, EE, Nup, Ndw, chis, chi_corrs, Lx, Ly, J_chi, path, wavefunc=False ):
+def write_data( psi, E, EE, Nup, Ndw, chis, chi_corrs, Lx, Ly, t_intra, t_inter, t3, J_chi, J_chi0, J_inter, path, wavefunc=False ):
 
     ensure_dir(path+"/observables/")
     ensure_dir(path+"/mps/")
 
     if wavefunc:
         data = {"psi": psi}
-        with h5py.File(path+"/mps/psi_Lx_%d_Ly_%d_Jchi_%.2f.h5" % (Lx, Ly, J_chi), 'w') as f:
+        with h5py.File(path+"/mps/psi_Lx_%d_Ly_%d_t_intra_%.3f_t_inter_%.3f_t3_%.3f_Jchi_%.3f_Jchi0_%.3f_Jinter_%.3f.h5" % (Lx, Ly, t_intra, t_inter, t3, J_chi), 'w') as f:
             hdf5_io.save_to_hdf5(f, data)
 
     Sz = 0.5 * (Nup - Ndw)
@@ -226,12 +226,12 @@ def write_data( psi, E, EE, Nup, Ndw, chis, chi_corrs, Lx, Ly, J_chi, path, wave
     file_chis = open(path+"/observables/chis.txt","a", 1)
     file_chi_corrs = open(path+"/observables/chi_corrs.txt","a", 1)
         
-    file_EE.write(f"{J_chi} {'  '.join(map(str, EE))}\n")
-    file_Nup.write(f"{J_chi} {'  '.join(map(str, Nup))}\n")
-    file_Ndw.write(f"{J_chi} {'  '.join(map(str, Ndw))}\n")
-    file_Sz.write(f"{J_chi} {'  '.join(map(str, Sz))}\n")
-    file_chis.write(f"{J_chi} {'  '.join(map(str, chis))}\n")
-    file_chi_corrs.write(f"{J_chi} {'  '.join(map(str, chi_corrs))}\n")
+    file_EE.write(f"{t_intra} {t_inter} {t3} {J_chi} {J_chi0} {J_inter} {'  '.join(map(str, EE))}\n")
+    file_Nup.write(f"{t_intra} {t_inter} {t3} {J_chi} {J_chi0} {J_inter} {'  '.join(map(str, Nup))}\n")
+    file_Ndw.write(f"{t_intra} {t_inter} {t3} {J_chi} {J_chi0} {J_inter} {'  '.join(map(str, Ndw))}\n")
+    file_Sz.write(f"{t_intra} {t_inter} {t3} {J_chi} {J_chi0} {J_inter} {'  '.join(map(str, Sz))}\n")
+    file_chis.write(f"{t_intra} {t_inter} {t3} {J_chi} {J_chi0} {J_inter} {'  '.join(map(str, chis))}\n")
+    file_chi_corrs.write(f"{t_intra} {t_inter} {t3} {J_chi} {J_chi0} {J_inter} {'  '.join(map(str, chi_corrs))}\n")
 
     file_EE.close()
     file_Nup.close()
@@ -242,7 +242,7 @@ def write_data( psi, E, EE, Nup, Ndw, chis, chi_corrs, Lx, Ly, J_chi, path, wave
 
     #
     file = open(path+"/observables.txt","a", 1)    
-    file.write(f"{J_chi} {E} {np.max(EE)} {np.mean(Sz)} {np.mean(chis)} {np.mean(chi_corrs)} \n")
+    file.write(f"{t_intra} {t_inter} {t3} {J_chi} {J_chi0} {J_inter} {E} {np.max(EE)} {np.mean(Sz)} {np.mean(chis)} {np.mean(chi_corrs)} \n")
     file.close()
 
 

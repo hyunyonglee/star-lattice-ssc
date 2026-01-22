@@ -128,13 +128,13 @@ class StarLatticeSSCModel(CouplingMPOModel):
         if J_chi0 != 0:
             self.add_chirality_field(-J_chi0)
 
-        # H = J_inter * (Sz_i Sz_j + 0.5 * (Sp_i Sm_j + Sm_i Sp_j))
+        # H = - J_inter * (Sz_i Sz_j + 0.5 * (Sp_i Sm_j + Sm_i Sp_j))
         if J_inter != 0:
             for u1, u2, dx in self.lat.pairs['inter']:
                 # Sz * Sz
-                self.add_coupling(J_inter, u1, 'Sz', u2, 'Sz', dx)
+                self.add_coupling(-J_inter, u1, 'Sz', u2, 'Sz', dx)
                 # 0.5 * (Sp * Sm + h.c.)
-                self.add_coupling(J_inter * 0.5, u1, 'Sp', u2, 'Sm', dx, plus_hc=True)
+                self.add_coupling(-J_inter * 0.5, u1, 'Sp', u2, 'Sm', dx, plus_hc=True)
 
 
     def add_chirality_field(self, strength):
