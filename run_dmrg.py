@@ -223,7 +223,7 @@ def write_data( psi, E, EE, Nup, Ndw, chis, chi_corrs, model_params, path, wavef
 
     if wavefunc:
         data = {"psi": psi}
-        with h5py.File(path+"/mps/psi_Lx_%d_Ly_%d_t_intra_%.3f_t_inter_%.3f_t3_%.3f_Jchi_%.3f_Jchi0_%.3f_Jinter_%.3f.h5" % (Lx, Ly, t_intra, t_inter, t3, J_chi), 'w') as f:
+        with h5py.File(path+"/mps/psi_Lx_%d_Ly_%d_t_intra_%.3f_t_inter_%.3f_t3_%.3f_Jchi_%.3f_Jchi0_%.3f_Jinter_%.3f.h5" % (Lx, Ly, t_intra, t_inter, t3, J_chi, J_chi0, J_inter), 'w') as f:
             hdf5_io.save_to_hdf5(f, data)
 
     Sz = 0.5 * (Nup - Ndw)
