@@ -220,10 +220,11 @@ def write_data( psi, E, EE, Nup, Ndw, chis, chi_corrs, model_params, path, wavef
     J_chi = model_params['J_chi']
     J_chi0 = model_params['J_chi0']
     J_inter = model_params['J_inter']
+    h = model_params.get('h', 0.0)
 
     if wavefunc:
         data = {"psi": psi}
-        with h5py.File(path+"/mps/psi_Lx_%d_Ly_%d_t_intra_%.3f_t_inter_%.3f_t3_%.3f_Jchi_%.3f_Jchi0_%.3f_Jinter_%.3f.h5" % (Lx, Ly, t_intra, t_inter, t3, J_chi, J_chi0, J_inter), 'w') as f:
+        with h5py.File(path+"/mps/psi_Lx_%d_Ly_%d_t_intra_%.3f_t_inter_%.3f_t3_%.3f_Jchi_%.3f_Jchi0_%.3f_Jinter_%.3f_h_%.3f.h5" % (Lx, Ly, t_intra, t_inter, t3, J_chi, J_chi0, J_inter, h), 'w') as f:
             hdf5_io.save_to_hdf5(f, data)
 
     Sz = 0.5 * (Nup - Ndw)
@@ -235,12 +236,12 @@ def write_data( psi, E, EE, Nup, Ndw, chis, chi_corrs, model_params, path, wavef
     file_chis = open(path+"/observables/chis.txt","a", 1)
     file_chi_corrs = open(path+"/observables/chi_corrs.txt","a", 1)
         
-    file_EE.write(f"{t_intra} {t_inter} {t3} {J_chi} {J_chi0} {J_inter} {'  '.join(map(str, EE))}\n")
-    file_Nup.write(f"{t_intra} {t_inter} {t3} {J_chi} {J_chi0} {J_inter} {'  '.join(map(str, Nup))}\n")
-    file_Ndw.write(f"{t_intra} {t_inter} {t3} {J_chi} {J_chi0} {J_inter} {'  '.join(map(str, Ndw))}\n")
-    file_Sz.write(f"{t_intra} {t_inter} {t3} {J_chi} {J_chi0} {J_inter} {'  '.join(map(str, Sz))}\n")
-    file_chis.write(f"{t_intra} {t_inter} {t3} {J_chi} {J_chi0} {J_inter} {'  '.join(map(str, chis))}\n")
-    file_chi_corrs.write(f"{t_intra} {t_inter} {t3} {J_chi} {J_chi0} {J_inter} {'  '.join(map(str, chi_corrs))}\n")
+    file_EE.write(f"{t_intra} {t_inter} {t3} {J_chi} {J_chi0} {J_inter} {h} {'  '.join(map(str, EE))}\n")
+    file_Nup.write(f"{t_intra} {t_inter} {t3} {J_chi} {J_chi0} {J_inter} {h} {'  '.join(map(str, Nup))}\n")
+    file_Ndw.write(f"{t_intra} {t_inter} {t3} {J_chi} {J_chi0} {J_inter} {h} {'  '.join(map(str, Ndw))}\n")
+    file_Sz.write(f"{t_intra} {t_inter} {t3} {J_chi} {J_chi0} {J_inter} {h} {'  '.join(map(str, Sz))}\n")
+    file_chis.write(f"{t_intra} {t_inter} {t3} {J_chi} {J_chi0} {J_inter} {h} {'  '.join(map(str, chis))}\n")
+    file_chi_corrs.write(f"{t_intra} {t_inter} {t3} {J_chi} {J_chi0} {J_inter} {h} {'  '.join(map(str, chi_corrs))}\n")
 
     file_EE.close()
     file_Nup.close()
@@ -251,7 +252,7 @@ def write_data( psi, E, EE, Nup, Ndw, chis, chi_corrs, model_params, path, wavef
 
     #
     file = open(path+"/observables.txt","a", 1)    
-    file.write(f"{t_intra} {t_inter} {t3} {J_chi} {J_chi0} {J_inter} {E} {np.max(EE)} {np.mean(Sz)} {np.mean(chis)} {np.mean(chi_corrs)} \n")
+    file.write(f"{t_intra} {t_inter} {t3} {J_chi} {J_chi0} {J_inter} {h} {E} {np.max(EE)} {np.mean(Sz)} {np.mean(chis)} {np.mean(chi_corrs)} \n")
     file.close()
 
 
@@ -287,6 +288,7 @@ if __name__ == "__main__":
     parser.add_argument("--J_chi", default='100.0', help=" Chirality coupling")
     parser.add_argument("--J_chi0", default='0.0', help=" On-site chirality field")
     parser.add_argument("--J_inter", default='0.0', help=" Inter triangle Heisenberg coupling")
+    parser.add_argument("--h_field", default='0.0', help=" Uniform magnetic field")
     parser.add_argument("--chi", default='100', help="Bond dimension")
     parser.add_argument("--max_sweep", default='50', help="Maximum number of sweeps")
     parser.add_argument("--path", default=current_directory, help="path for saving data")
@@ -302,6 +304,7 @@ if __name__ == "__main__":
     J_chi = float(args.J_chi)
     J_chi0 = float(args.J_chi0)
     J_inter = float(args.J_inter)
+    h_field = float(args.h_field)
     chi = int(args.chi)
     max_sweep = int(args.max_sweep)
     path = args.path
@@ -319,7 +322,8 @@ if __name__ == "__main__":
         't3': t3, 
         'J_chi': J_chi,
         'J_chi0': J_chi0,
-        'J_inter': J_inter
+        'J_inter': J_inter,
+        'h': h_field
     }
 
     dmrg_params = {
