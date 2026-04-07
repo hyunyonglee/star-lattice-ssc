@@ -101,7 +101,13 @@ class StarLatticeSSCModel(CouplingMPOModel):
         J_chi = model_params.get('J_chi', 0.0) 
         J_chi0 = model_params.get('J_chi0', 0.0)
         J_inter = model_params.get('J_inter', 0.0)
-        
+        h = model_params.get('h', 0.0)
+
+        # Uniform Magnetic Field: H += -h * Sz
+        if h != 0:
+            for u in range(len(self.lat.unit_cell)):
+                self.add_onsite(-h, u, 'Sz')
+
         # Intra Hopping
         for u1, u2, dx in self.lat.pairs['intra']:
             self.add_coupling(-t_intra, u1, 'Cdu', u2, 'Cu', dx, plus_hc=True)
